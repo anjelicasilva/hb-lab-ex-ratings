@@ -26,6 +26,16 @@ def index():
     """Homepage."""
     return render_template("homepage.html")
 
+@app.route('/login')
+def login():
+    login_email = request.args.get("email")
+    login_password = request.args.get("password")
+
+    new_user_record = User.query.filter(User.email == login_email).first() 
+    if new_user_record.password == login_password:
+        print('Trueeeee')
+
+    
 
 @app.route("/users")
 def user_list():
@@ -40,14 +50,14 @@ def register_form():
     return render_template("register_form.html")
 
 @app.route("/register", methods=["POST"])
-def register_form():
-    email = request.args("email")
-    password = request.args("password")
+def register_process():
+    new_email = request.form.get("email")
+    new_password = request.form.get("password")
 
-    if User.query.filter_by(email=email).all() != None:
-
-        db.session.add(email)
-    db.session.commit()
+    if not User.query.filter(User.email == new_email).first():
+        new_user = User(email=new_email, password=new_password)
+        db.session.add(new_user)
+        db.session.commit()
 
 
     return redirect("/")
